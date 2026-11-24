@@ -87,4 +87,4 @@ Thêm bảng thuế (`tax_registry_a/b/c_1`) và `applprev_2`: 18 biến mới, 
 
 ## 9. Kiểm định độc lập trên tập test ẩn của Kaggle
 
-Version 8 chạy xong trên dữ liệu mẫu (submission.csv 10 dòng) và đã được nộp Late Submission lúc 12:25 ngày 24/11/2026; Kaggle đang chạy lại trên tập test ẩn. Version 5 trước đó lỗi Out of Memory; bản v6.2 đã giải phóng bộ nhớ từng phần, đặt phần nộp bài cuối cùng và dự đoán theo khối. Điểm public/private: chờ cập nhật.
+Version 8 (Late Submission ngày 24/11/2026) chạy lại thành công trên tập test ẩn: **điểm public 0,50833, điểm private 0,41343** (thước đo Gini stability của cuộc thi). Mức này thấp hơn nhiều so với kiểm định nội bộ trên tuần 78-91 (0,715). Nguyên nhân chưa xác định; các giả thuyết cần kiểm tra: (1) đặc trưng của tập test ẩn được tạo khác với lúc huấn luyện (kiểu dữ liệu, mã phân loại, cột thiếu được điền rỗng); (2) trôi dữ liệu mạnh hơn ở giai đoạn sau, phù hợp với adversarial AUC = 1,0 ở mục 7; (3) điểm private tính trên các tuần xa hơn nên bị phạt nặng hơn về độ dốc Gini. Đây là hạn chế quan trọng nhất của đề tài.
