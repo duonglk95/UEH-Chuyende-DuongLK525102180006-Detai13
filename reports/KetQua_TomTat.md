@@ -1,68 +1,90 @@
-# Kết quả Đề tài 13 – Version 5 trên Kaggle (toàn bộ dữ liệu, 2 giờ 16 phút)
+# Kết quả Đề tài 13 – Version 8 trên Kaggle (bản v6.2, toàn bộ dữ liệu, 2 giờ 27 phút)
 
-Nguồn: đầu ra các ô code của notebook "Topic 13 DLK", Version 5 (Internet tắt, chạy lại toàn bộ). Nhãn `target` là dữ liệu thật của Home Credit; chỉ dùng biến dẫn xuất từ cột thật (gộp bảng, đổi ngày thành số ngày, 3 tỷ lệ, gộp credit bureau). Chia theo thời gian: train tuần 0-63 (1.282.082 hồ sơ, vỡ nợ 3,32%), valid 64-77 (92.870; 2,43%), test 78-91 (151.707; 2,12%).
+Nguồn: đầu ra các ô code của notebook "Topic 13 DLK", Version 8 (Internet tắt, chạy lại toàn bộ, hoàn tất ngày 24/11/2026). Nhãn `target` là dữ liệu thật của Home Credit; chỉ dùng biến dẫn xuất từ cột thật (gộp bảng, đổi ngày thành số ngày, 3 tỷ lệ, gộp credit bureau). Chia theo thời gian: train tuần 0-63 (1.282.082 hồ sơ, vỡ nợ 3,32%), valid 64-77 (92.870; 2,43%), test 78-91 (151.707; 2,12%).
 
-## 1. Độ chính xác trên tập test, khoảng tin cậy bootstrap 95% (500 lần)
+So với Version 5, bản này đã: loại 20 cột ngày có giá trị sau ngày quyết định (trừ cột hạn trả/đáo hạn), loại 21 cột có tỷ lệ thiếu dữ liệu chênh ≥ 30 điểm phần trăm giữa train và valid, bỏ giới tính. Vì vậy AUC giảm nhẹ so với V5 (0,8711 → 0,8689) – đây là cái giá của việc chặn rò rỉ, không phải mô hình kém đi.
+
+## 1. Độ chính xác trên tập test, khoảng tin cậy bootstrap 95%
 
 | Mô hình | AUC | CI95 | Gini | Gini stability* |
 |---|---|---|---|---|
-| **LightGBM gốc + credit bureau (376 biến) – mô hình cuối** | **0,8711** | [0,8660; 0,8766] | **0,7423** | **0,7180** |
-| LightGBM sqrt(scale_pos_weight) | 0,8507 | [0,8450; 0,8569] | 0,7015 | 0,6799 |
-| LightGBM không xử lý mất cân bằng | 0,8504 | [0,8445; 0,8567] | 0,7009 | 0,6790 |
-| LightGBM scale_pos_weight | 0,8492 | [0,8433; 0,8556] | 0,6984 | 0,6773 |
-| Random Forest class_weight | 0,7997 | [0,7923; 0,8068] | 0,5995 | 0,5622 |
-| Random Forest | 0,7968 | [0,7892; 0,8038] | 0,5935 | 0,5568 |
-| Logistic Regression (WoE) – các biến thể | 0,7924 – 0,7953 | | 0,585 – 0,591 | 0,547 – 0,553 |
+| **LightGBM gốc + credit bureau (354 biến) – mô hình cuối** | **0,8689** | [0,8635; 0,8744] | **0,7378** | **0,7153** |
+| LightGBM sqrt(scale_pos_weight) | 0,8456 | [0,8395; 0,8518] | 0,6911 | 0,6709 |
+| LightGBM scale_pos_weight | 0,8454 | [0,8395; 0,8515] | 0,6908 | 0,6716 |
+| LightGBM không xử lý mất cân bằng | 0,8451 | [0,8388; 0,8512] | 0,6901 | 0,6692 |
+| Random Forest class_weight | 0,7972 | [0,7900; 0,8045] | 0,5943 | 0,5586 |
+| Random Forest | 0,7955 | [0,7883; 0,8034] | 0,5909 | 0,5550 |
+| Logistic Regression (WoE) – 4 biến thể | 0,7882 – 0,7888 | | 0,576 – 0,578 | 0,540 – 0,541 |
 
 *Chỉ số của cuộc thi: trung bình Gini theo tuần + 88 × min(0, độ dốc) − 0,5 × độ lệch chuẩn phần dư.
 
-- Kiểm định DeLong: mô hình cuối tốt hơn mọi mô hình còn lại có ý nghĩa thống kê (so với LightGBM đặc trưng gốc: chênh AUC 0,0207, z = 12,86, p ≈ 7×10⁻³⁸; so với Logistic Regression: chênh ≈ 0,077, z ≈ 25,7).
-- Xử lý mất cân bằng (class weight, undersampling, SMOTE, scale_pos_weight) không cải thiện khả năng xếp hạng của bất kỳ mô hình nào; chỉ làm lệch xác suất.
+- DeLong: mô hình cuối tốt hơn mọi mô hình còn lại có ý nghĩa thống kê (so với LightGBM đặc trưng gốc: chênh 0,0238, z = 13,99, p ≈ 2×10⁻⁴⁴; so với Logistic Regression: chênh ≈ 0,080, z ≈ 25,8).
+- Xử lý mất cân bằng không cải thiện xếp hạng (LightGBM: 0,8451 / 0,8454 / 0,8456; LR: 0,7882 – 0,7888) mà làm lệch xác suất (Brier 0,020 → 0,179 với scale_pos_weight đầy đủ = 29,1).
+- Đặc trưng credit bureau (120 biến từ `credit_bureau_a_1`) là đóng góp lớn nhất: AUC valid 0,8287 → 0,8558, test 0,8451 → 0,8689, Gini tuần thấp nhất 0,641 → 0,678.
 
 ## 2. Độ ổn định theo thời gian – kiểm định cửa sổ thời gian (khoảng đệm 2 tuần)
 
 | Cửa sổ | Train | Kiểm định | AUC | Gini tuần TB |
 |---|---|---|---|---|
-| Mở rộng | 0-37 | 40-51 | 0,8324 | 0,662 |
-| Mở rộng | 0-49 | 52-63 | 0,8354 | 0,668 |
-| Mở rộng | 0-61 | 64-77 | 0,8536 | 0,694 |
-| Mở rộng | 0-75 | 78-91 | 0,8708 | 0,735 |
-| Trượt 40 tuần | 10-49 / 22-61 / 36-75 | 52-63 / 64-77 / 78-91 | 0,8325 / 0,8520 / 0,8668 | |
+| Mở rộng | 0-37 | 40-51 | 0,8316 | 0,660 |
+| Mở rộng | 0-49 | 52-63 | 0,8344 | 0,666 |
+| Mở rộng | 0-61 | 64-77 | 0,8503 | 0,687 |
+| Mở rộng | 0-75 | 78-91 | 0,8657 | 0,725 |
+| Trượt 40 tuần | 10-49 / 22-61 / 36-75 | 52-63 / 64-77 / 78-91 | 0,8325 / 0,8501 / 0,8642 | |
 
-- Cửa sổ mở rộng: AUC trung bình 0,8481 ± 0,0178 (thấp nhất 0,8324); cửa sổ trượt: 0,8459 ± 0,0167. Dữ liệu cũ vẫn có ích (cửa sổ mở rộng nhỉnh hơn) → chưa cần bỏ dữ liệu cũ khi huấn luyện lại.
-- Gini tuần không có xu hướng giảm (độ dốc +0,001).
+- Cửa sổ mở rộng: AUC trung bình 0,8455 ± 0,0158; cửa sổ trượt cho kết quả gần như bằng → dữ liệu cũ vẫn có ích, chưa cần bỏ khi huấn luyện lại.
+- Gini tuần của mô hình cuối không giảm theo thời gian (độ dốc +0,0016, độ lệch chuẩn phần dư 0,031).
 
 ## 3. Hiệu chỉnh xác suất (mô hình cuối, isotonic fit trên valid)
 
 | | ECE | Hệ số độ dốc | Hệ số chặn | PD TB | Vỡ nợ thực |
 |---|---|---|---|---|---|
-| Trước hiệu chỉnh | 0,0153 | 1,139 | −0,288 | 3,65% | 2,12% |
-| Sau isotonic | **0,0039** | 1,061 | −0,027 | 2,51% | 2,12% |
+| Trước hiệu chỉnh | 0,0151 | 1,110 | −0,350 | 3,63% | 2,12% |
+| Sau isotonic | **0,0043** | 1,056 | −0,056 | 2,55% | 2,12% |
 
-Hạng rủi ro (test, mô hình cuối) giảm đơn điệu: E 11,26% | D 2,69% | C 0,72% | B 0,12% | A 0,02%.
+Hạng rủi ro (test, mô hình cuối) giảm đơn điệu: E 10,95% | D 2,80% | C 0,69% | B 0,14% | A 0,02%.
 
-## 4. Chính sách hạn mức (mô hình đặc trưng gốc, giả định biên 6%, LGD 60%)
+## 4. Scorecard và chính sách hạn mức (mô hình đặc trưng gốc; biên 6%, LGD 60%)
 
-Duyệt 88,3%, vỡ nợ nhóm duyệt 1,05% (toàn bộ 2,12%); lợi nhuận theo hạn mức từng hạng 62,0 tỷ VND trên tổng hạn mức 1.089,9 tỷ; ngưỡng PD tối ưu (valid) 0,079 → test duyệt 93,4%, vỡ nợ 1,32%. Gini tuần TB 0,694, PSI train → test 0,034.
+| Hạng | Điểm | Tỷ trọng | Vỡ nợ | Quyết định | Hạn mức | Lợi nhuận (tỷ VND) |
+|---|---|---|---|---|---|---|
+| A | 684 – 753 | 6,4% | 0,09% | Duyệt | 20 triệu | 11,6 |
+| B | 634 – 664 | 30,8% | 0,20% | Duyệt | 12 triệu | 32,9 |
+| C | 597 – 633 | 27,1% | 0,84% | Duyệt | 6 triệu | 13,4 |
+| D | 573 – 595 | 22,0% | 2,57% | Duyệt hạn chế | 2 triệu | 2,9 |
+| E | 447 – 573 | 13,7% | 9,22% | Từ chối | 0 | 0 |
+| **Tổng** | | | 2,12% | | 1.069,6 tỷ | **60,8** |
 
-## 5. Kiểm tra rò rỉ và trôi dữ liệu
+- Tối ưu ngưỡng PD trên valid (0,087) rồi áp lên test: duyệt 92,6%, vỡ nợ nhóm duyệt 1,28%, lợi nhuận 61,3 tỷ. Với hạn mức cố định 6 triệu: 43,4 tỷ → hạn mức theo hạng mang lại thêm ~18 tỷ.
+- Gini tuần TB 0,684 (thấp nhất 0,643); PSI điểm dự đoán train → test 0,018 (ổn định).
 
-- **Hoán vị nhãn**: AUC test 0,5065 (kỳ vọng 0,5) → quy trình không rò rỉ nhãn.
-- **Adversarial validation (train vs test): AUC = 1,00** → có biến phân biệt hoàn toàn hai giai đoạn. Nguyên nhân chính là các cột chỉ có dữ liệu ở giai đoạn sau (gain adversarial: `description_5085714M` 47,0%, `contractssum_5085716L` 28,1%, `requesttype_4525192L` 5,7%, `birthdate_574D` 2,3%...); 14 biến PSI > 0,25. Mô hình vẫn ổn định trên test, nhưng đây là rủi ro khi triển khai → **đã sửa ở bản v6**: loại cột có chênh lệch tỷ lệ thiếu dữ liệu giữa train và valid ≥ 30 điểm phần trăm (không dùng tập test để chọn).
+## 5. Dấu hiệu hành vi trước vỡ nợ (notebook 05)
 
-## 6. Thuộc tính nhạy cảm (giới tính)
+| Nhóm hành vi | Số biến | AUC riêng nhóm (test) | Độ phủ cờ | Vỡ nợ khi có cờ / không | Lift |
+|---|---|---|---|---|---|
+| Trễ hạn | 69 | 0,779 | 21,7% | 6,02% / 1,04% | 2,84 |
+| Vay nhiều nơi | 74 | 0,740 | 18,0% | 5,63% / 1,35% | 2,66 |
+| Gánh nặng nợ | 42 | 0,667 | 21,8% | 4,05% / 1,58% | 1,91 |
+| Đảo nợ / gia hạn | 3 | 0,567 | 14,0% | 4,04% / 1,81% | 1,91 |
 
-| | AUC test | Tỷ lệ duyệt nữ | Tỷ lệ duyệt nam | Vỡ nợ nhóm duyệt nữ / nam |
-|---|---|---|---|---|
-| Có giới tính | 0,8711 | 92,2% | 85,9% | 0,89% / 1,19% |
-| Không giới tính | 0,8692 | 90,5% | 89,0% | 0,82% / 1,35% |
+Tỷ trọng gain của mô hình cuối: trễ hạn 28,8%, vay nhiều nơi 19,4%, gánh nặng nợ 9,0%, đảo nợ 0,5%, biến khác 42,4%. Dữ liệu chỉ có 3 biến về gia hạn hợp đồng (`prolongationcount`) nên nhóm "đảo nợ" chỉ đo được gián tiếp.
 
-Bỏ giới tính làm AUC giảm 0,0019 (DeLong p = 0,012: có ý nghĩa thống kê nhưng rất nhỏ) và thu hẹp chênh lệch tỷ lệ duyệt từ 6,3 xuống 1,5 điểm phần trăm → **bản v6 không dùng giới tính**.
+## 6. Ngoài các dấu hiệu túng thiếu hiển nhiên (notebook 08)
 
-## 7. Kiểm định độc lập trên tập test ẩn của Kaggle
+- Mô hình chỉ dùng 188 biến "hiển nhiên" (trễ hạn, vay nhiều nơi, gánh nặng nợ, đảo nợ): AUC 0,8530; thêm 166 biến còn lại lên 0,8689 (chênh 0,0159, z = 11,1, p ≈ 2×10⁻²⁸). Biến không hiển nhiên chiếm 47,3% tỷ trọng SHAP.
+- Đặc điểm đi cùng rủi ro (O/E = quan sát / kỳ vọng theo tỷ lệ chung, kiểm định z): nhóm hưu trí (O/E 0,68, z = −10,0) và công chức (0,78) rủi ro thấp hơn mức chung; người làm thuê "EMPLOYED" cao hơn (1,10, z = 2,9). Rủi ro cao hơn ở người trẻ nhất (O/E 1,08) và ở người đã vay khoản giá trị lớn (price cao nhất: 1,03). Số người dùng chung số điện thoại di động, sản phẩm bán chéo, loại điểm bán và số kỳ thanh toán cũng có ý nghĩa.
+- Tuổi và tình trạng hôn nhân được đánh dấu là thuộc tính nhạy cảm: chỉ báo cáo, khuyến nghị không dùng để từ chối.
+- Nhóm "trông an toàn" (60% hồ sơ, 99.826 ở test) có tỷ lệ vỡ nợ 0,45%; cây quyết định tìm rủi ro ẩn trong nhóm này chỉ đạt AUC 0,607 → rủi ro còn lại phân tán, không có phân khúc ẩn rõ rệt.
 
-Late Submission Version 5 (nộp 08:59 ngày 23/11/2026) **lỗi Out of Memory** khi Kaggle chạy lại trên tập test ẩn: notebook gộp giữ dữ liệu của mọi phần trước trong bộ nhớ rồi mới tạo đặc trưng cho tập test ẩn (lớn hơn nhiều so với 10 dòng mẫu). Bản v6 đã sửa: mỗi phần giải phóng bộ nhớ của phần trước, phần tạo `submission.csv` đặt cuối cùng và dự đoán theo khối 100.000 hồ sơ. Chưa có điểm public/private.
+## 7. Kiểm tra rò rỉ và trôi dữ liệu
 
-## 8. Bản v6 (chờ chạy)
+- **Hoán vị nhãn**: AUC test 0,4548 (kỳ vọng ~0,5) → không rò rỉ nhãn.
+- **Adversarial validation (train vs test): AUC vẫn = 1,00.** Biến phân biệt chính là `description_5085714M` (62,3% gain, phân loại khách của credit bureau), `applprev_1__postype_4733339M__first` (12,5%), `person_1__safeguarantyflag_411L__mean` (9,8%) – các cột phân loại có mã mới xuất hiện ở giai đoạn sau, không bị bộ lọc tỷ lệ thiếu dữ liệu bắt được. 14 biến PSI > 0,25. Dù vậy, điểm dự đoán ổn định (PSI 0,018) và Gini tuần không giảm → trôi ở cấp biến không làm hỏng dự đoán, nhưng cần theo dõi khi triển khai. Hướng tiếp: lọc thêm theo PSI/adversarial trên valid.
 
-Loại biến trôi độ sẵn có; bỏ giới tính; thêm notebook 08 – đặc điểm đi cùng rủi ro cao ngoài các dấu hiệu túng thiếu hiển nhiên (mô hình đối chứng, SHAP, rủi ro quan sát/kỳ vọng O/E với kiểm định z, phân khúc rủi ro ẩn ở khách "trông an toàn").
+## 8. Thử nghiệm bảng phụ (notebook 09)
+
+Thêm bảng thuế (`tax_registry_a/b/c_1`) và `applprev_2`: 18 biến mới, bộ lọc chống rò rỉ loại 12, giữ 6. AUC 0,8689 → 0,8695 (DeLong z = 1,16, p = 0,246) → **không cải thiện có ý nghĩa**, nên không đưa vào mô hình nộp bài.
+
+## 9. Kiểm định độc lập trên tập test ẩn của Kaggle
+
+Version 8 chạy xong trên dữ liệu mẫu (submission.csv 10 dòng) và đã được nộp Late Submission lúc 12:25 ngày 24/11/2026; Kaggle đang chạy lại trên tập test ẩn. Version 5 trước đó lỗi Out of Memory; bản v6.2 đã giải phóng bộ nhớ từng phần, đặt phần nộp bài cuối cùng và dự đoán theo khối. Điểm public/private: chờ cập nhật.

@@ -16,4 +16,4 @@ Dữ liệu: [Home Credit – Credit Risk Model Stability](https://www.kaggle.co
 - Lọc rò rỉ: bỏ cột ngày tương lai, cột thay đổi tỉ lệ thiếu dữ liệu giữa các giai đoạn, và thuộc tính nhạy cảm (giới tính).
 
 ## Chạy
-Mở `Kaggle_All_In_One.ipynb` trên Kaggle, thêm dữ liệu cuộc thi, Run All (~2,5 giờ CPU).
+Mở `Kaggle_All_In_One.ipynb` trên Kaggle, thêm dữ liệu cuộc thi, Run All (khoảng 2 giờ 30 phút trên CPU).
