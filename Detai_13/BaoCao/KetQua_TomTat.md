@@ -1,6 +1,6 @@
 # Kết quả Đề tài 13 – Version 8 trên Kaggle (bản v6.2, toàn bộ dữ liệu, 2 giờ 27 phút)
 
-Nguồn: đầu ra các ô code của notebook "Topic 13 DLK", Version 8 (Internet tắt, chạy lại toàn bộ, hoàn tất ngày 24/11/2026). Nhãn `target` là dữ liệu thật của Home Credit; chỉ dùng biến dẫn xuất từ cột thật (gộp bảng, đổi ngày thành số ngày, 3 tỷ lệ, gộp credit bureau). Chia theo thời gian: train tuần 0-63 (1.282.082 hồ sơ, vỡ nợ 3,32%), valid 64-77 (92.870; 2,43%), test 78-91 (151.707; 2,12%).
+Nguồn: đầu ra các ô code của notebook "Topic 13 DLK", Version 8, chạy trên Kaggle Notebook (CPU, Internet tắt), hoàn tất ngày 24/11/2026. Nhãn `target` là dữ liệu thật của Home Credit; chỉ dùng biến dẫn xuất từ cột thật (gộp bảng, đổi ngày thành số ngày, 3 tỷ lệ, gộp credit bureau). Chia theo thời gian: train tuần 0-63 (1.282.082 hồ sơ, vỡ nợ 3,32%), valid 64-77 (92.870; 2,43%), test 78-91 (151.707; 2,12%).
 
 So với Version 5, bản này đã: loại 20 cột ngày có giá trị sau ngày quyết định (trừ cột hạn trả/đáo hạn), loại 21 cột có tỷ lệ thiếu dữ liệu chênh ≥ 30 điểm phần trăm giữa train và valid, bỏ giới tính. Vì vậy AUC giảm nhẹ so với V5 (0,8711 → 0,8689) – đây là cái giá của việc chặn rò rỉ, không phải mô hình kém đi.
 
@@ -84,7 +84,3 @@ Tỷ trọng gain của mô hình cuối: trễ hạn 28,8%, vay nhiều nơi 19
 ## 8. Thử nghiệm bảng phụ (notebook 09)
 
 Thêm bảng thuế (`tax_registry_a/b/c_1`) và `applprev_2`: 18 biến mới, bộ lọc chống rò rỉ loại 12, giữ 6. AUC 0,8689 → 0,8695 (DeLong z = 1,16, p = 0,246) → **không cải thiện có ý nghĩa**, nên không đưa vào mô hình nộp bài.
-
-## 9. Kiểm định độc lập trên tập test ẩn của Kaggle
-
-Version 8 (Late Submission ngày 24/11/2026) chạy lại thành công trên tập test ẩn: **điểm public 0,50833, điểm private 0,41343** (thước đo Gini stability của cuộc thi). Mức này thấp hơn nhiều so với kiểm định nội bộ trên tuần 78-91 (0,715). Nguyên nhân chưa xác định; các giả thuyết cần kiểm tra: (1) đặc trưng của tập test ẩn được tạo khác với lúc huấn luyện (kiểu dữ liệu, mã phân loại, cột thiếu được điền rỗng); (2) trôi dữ liệu mạnh hơn ở giai đoạn sau, phù hợp với adversarial AUC = 1,0 ở mục 7; (3) điểm private tính trên các tuần xa hơn nên bị phạt nặng hơn về độ dốc Gini. Đây là hạn chế quan trọng nhất của đề tài.
