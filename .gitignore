@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.parquet
+*.csv
+*.joblib
+data/
+parquet_files/
