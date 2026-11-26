@@ -2,15 +2,14 @@
 
 Chuyên đề ML/DS/AI – Master of IDT, UEH (2026 S2). Học viên: Dương Lê Khắc (525102180006).
 
-Dữ liệu: [Home Credit – Credit Risk Model Stability](https://www.kaggle.com/competitions/home-credit-credit-risk-model-stability) (Kaggle). Dữ liệu không được đưa vào repo; notebook tự tìm thư mục dữ liệu dưới `/kaggle/input`.
+Dữ liệu: [Home Credit – Credit Risk Model Stability](https://www.kaggle.com/competitions/home-credit-credit-risk-model-stability) (Kaggle).
 
 ## Cấu trúc
 - `Detai_13/SourceCode/utils.py`: hàm dùng chung (đọc dữ liệu, gộp bảng, Gini stability, bootstrap, DeLong, calibration, nhóm hành vi).
 - `Detai_13/SourceCode/01` đến `09`: từng bước: EDA, đặc trưng, mô hình mất cân bằng, scorecard & hạn mức, cảnh báo sớm, kiểm định, nộp bài, rủi ro "ngoài dấu hiệu rõ ràng", thử nghiệm bảng phụ.
-- `Detai_13/SourceCode/Kaggle_All_In_One.ipynb`: bản gộp chạy trọn trên Kaggle (Internet tắt).
+- `Detai_13/SourceCode/Kaggle_All_In_One.ipynb`: Pipeline chạy trên Kaggle.
 - `Detai_13/BaoCao/`: báo cáo Word (`BaoCao_Detai13.docx`), tóm tắt kết quả, tổng quan nghiên cứu.
 - `Detai_13/Data/README.txt`: nguồn và cách lấy dữ liệu.
-- `Detai_13/Slide/`: slide trình bày.
 
 ## Thiết kế chính
 - Chia theo thời gian (WEEK_NUM): train 0–63, valid 64–77, test 78–91; kiểm định cửa sổ trượt.
